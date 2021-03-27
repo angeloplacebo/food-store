@@ -1,10 +1,11 @@
 package br.edu.ifpb.padroes.service.order;
 
 import br.edu.ifpb.padroes.domain.Order;
-import br.edu.ifpb.padroes.service.log.LogHandler;
+import br.edu.ifpb.padroes.service.log.LogHandlerFile;
 import br.edu.ifpb.padroes.service.log.LogService;
 import br.edu.ifpb.padroes.service.payment.PaymentService;
 import br.edu.ifpb.padroes.service.mail.EmailNotification;
+import br.edu.ifpb.padroes.service.payment.PaymentStrategy;
 
 public class OrderManager {
 
@@ -18,12 +19,13 @@ public class OrderManager {
 
     private PaymentService paymentService = new PaymentService();
 
-    private LogService logService = new LogService(new LogHandler(LogHandler.LogHandlerType.FILE));
+    private LogService logService = new LogService(new LogHandlerFile());
 
-    public void payOrder(PaymentService.PaymentType paymentType) {
+    public void payOrder(PaymentStrategy paymentStrategy) {
         order.setStatus(Order.OrderStatus.IN_PROGRESS);
         try {
-            paymentService.doPayment(paymentType);
+            paymentService.paymentStrategy = paymentStrategy;
+            paymentService.doPayment();
             order.setStatus(Order.OrderStatus.PAYMENT_SUCCESS);
             emailNotification.sendMailNotification(String.format("Order %d completed successfully", order.getId()));
             logService.info("payment finished");

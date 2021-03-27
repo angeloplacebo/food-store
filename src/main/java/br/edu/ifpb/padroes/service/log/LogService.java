@@ -2,11 +2,11 @@ package br.edu.ifpb.padroes.service.log;
 
 public class LogService {
 
-    public LogService(LogHandler logHandler) {
+    private ILogHandler logHandler;
+
+    public LogService(ILogHandler logHandler) {
         this.logHandler = logHandler;
     }
-
-    private LogHandler logHandler;
 
     public void debug(String message) {
         logHandler.log("stack trace");
